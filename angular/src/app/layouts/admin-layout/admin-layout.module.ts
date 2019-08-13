@@ -20,6 +20,11 @@ import {
   MatTooltipModule,
   MatSelectModule
 } from '@angular/material';
+
+import { ClientService } from 'app/services/client-service.service';
+import { ClientAddComponent } from 'app/client-add/client-add.component';
+import { ClientsComponent } from 'app/clients/clients.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -41,7 +46,10 @@ import {
     MapsComponent,
     NotificationsComponent,
     UpgradeComponent,
-  ]
+    ClientsComponent,
+    ClientAddComponent
+  ],
+  providers: [ClientService],
 })
 
 export class AdminLayoutModule {}
