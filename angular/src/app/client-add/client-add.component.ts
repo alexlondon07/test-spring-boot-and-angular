@@ -11,10 +11,11 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   templateUrl: "./client-add.component.html"
 })
 export class ClientAddComponent implements OnInit {
-  title = "Create Client";
+  public title: string;
   public description: string;
   client: Client = new Client();
-
+  public clients: any = [];
+  public exist: string;
   public age: number;
 
   constructor(private _clientService: ClientService) {
@@ -22,13 +23,24 @@ export class ClientAddComponent implements OnInit {
     this.description = "Create new cliente in api Firebase.io";
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this._clientService.getClients().subscribe(
+      data => {
+        if (data) {
+          this.clients = data;
+          console.log("Component getClients: ", this.clients);
+        }
+      },
+      error => {
+        console.log(<any>error);
+      }
+    );
+  }
 
   /**
    * Método para validar la edad
-   * @param age
    */
-  validateAge(age) {
+  validateAge() {
     let dateString = this.client.birthdate;
     let newDate = new Date(dateString);
 
@@ -44,11 +56,37 @@ export class ClientAddComponent implements OnInit {
   }
 
   /**
+   * Método para validar si un cliente existe o no
+   * @param identificacion
+   */
+  validateClient(identification: string) {
+    this.exist = this.clients.find(x => x.identification == identification);
+    if (this.exist != undefined && this.exist != "") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Método para crear un nuevo cliente
    */
   saveClient(form: NgForm) {
     if (form.valid) {
-      if (this.validateAge(this.client.birthdate)) {
+
+      //Se valida que sea mayor de edad
+      if (this.validateAge()) {
+
+        if (this.validateClient(this.client.identification)) {
+          Swal.fire({
+            title: "Error!!",
+            text: "The customer with that identification already exists!",
+            type: "error"
+          });
+          return;
+        }
+
+        //crea el nuevo cliente
         this._clientService.createClient(this.client).subscribe(res => {
           console.log(res);
 

@@ -19,7 +19,13 @@ export class ClientsComponent implements OnInit {
 
   ngOnInit() {
     console.log("ClientsComponent loaded");
+    this.getData();
+  }
 
+  /**
+   * Obtener los Clientes registrados
+   */
+  getData(){
     this._clientService.getClients().subscribe(
       data => {
         if (data) {
